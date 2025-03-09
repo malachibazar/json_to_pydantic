@@ -17,7 +17,7 @@ A web application that converts JSON data into Pydantic model definitions.
   - Properly generates type annotations for complex structures
 
 - **Advanced Customization Options**
-  - **Optional fields**: Make all fields optional with `None` defaults 
+  - **Optional fields**: Make all fields optional with `None` defaults
   - **CamelCase conversion**: Convert camelCase JSON keys to snake_case with field aliases
   - Modern Pydantic v2 compatible output using `model_config = ConfigDict()`
 
@@ -35,12 +35,14 @@ A web application that converts JSON data into Pydantic model definitions.
 ## Installation
 
 1. Clone this repository:
+
 ```bash
 git clone <repository-url>
 cd json-to-pydantic
 ```
 
-2. Install dependencies with uv:
+1. Install dependencies with uv:
+
 ```bash
 # Create a virtual environment and install dependencies in one step
 uv pip install -e .
