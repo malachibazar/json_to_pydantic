@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>JSON to Pydantic Converter</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/dracula.min.css"
+    />
+    <style>
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue",
+          sans-serif;
+        padding: 20px;
+        background-color: #f8f9fa;
+      }
+      .title-container {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+      .title-container h1 {
+        font-weight: 700;
+        color: #343a40;
+      }
+      .title-container p {
+        color: #6c757d;
+        max-width: 600px;
+        margin: 0 auto;
+      }
+      .converter-container {
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        padding: 20px;
+        margin-bottom: 20px;
+      }
+      .code-container {
+        border-radius: 6px;
+        overflow: hidden;
+        margin-bottom: 20px;
+        height: 500px;
+      }
+      .CodeMirror {
+        height: 100%;
+        font-size: 12px;
+        line-height: 1.4;
+      }
+      .CodeMirror pre {
+        padding: 0 4px;
+      }
+      button {
+        padding: 10px 20px;
+        background-color: #0d6efd;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: background-color 0.2s;
+      }
+      button:hover {
+        background-color: #0b5ed7;
+      }
+      .error-message {
+        color: #dc3545;
+        margin-top: 10px;
+        font-weight: 500;
+      }
+      .copy-button {
+        margin-top: 10px;
+        background-color: #6c757d;
+      }
+      .copy-button:hover {
+        background-color: #5a6268;
+      }
+      .footer {
+        text-align: center;
+        margin-top: 40px;
+        color: #6c757d;
+        font-size: 14px;
+      }
+      .option-group {
+        margin-top: 15px;
+        padding-top: 15px;
+        border-top: 1px solid #e9ecef;
+      }
+      .form-check {
+        margin-right: 15px;
+        display: inline-block;
+      }
+      .form-check-label {
+        font-size: 0.9rem;
+        color: #495057;
+      }
+      .options-title {
+        font-size: 0.95rem;
+        font-weight: 600;
+        margin-bottom: 10px;
+        color: #495057;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="title-container">
+        <h1>JSON to Pydantic Converter</h1>
+        <p>
+          Paste your JSON on the left and get a generated Pydantic model on the
+          right
+        </p>
+      </div>
+
+      <div class="converter-container">
+        <form method="post" id="jsonForm">
+          <div class="row">
+            <div class="col-md-6">
+              <h4>JSON Input</h4>
+              <div class="code-container">
+                <textarea id="jsonInput" name="json_input">
+{{ json_input }}</textarea
+                >
+              </div>
+
+              <div class="option-group">
+                <div class="options-title">Generation Options:</div>
+                <div class="form-check">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="makeOptional"
+                    name="make_optional"
+                    {%
+                    if
+                    make_optional
+                    %}checked{%
+                    endif
+                    %}
+                  />
+                  <label class="form-check-label" for="makeOptional">
+                    Make all fields optional
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="convertCamelCase"
+                    name="convert_camel_case"
+                    {%
+                    if
+                    convert_camel_case
+                    %}checked{%
+                    endif
+                    %}
+                  />
+                  <label class="form-check-label" for="convertCamelCase">
+                    Convert camelCase to snake_case with aliases
+                  </label>
+                </div>
+              </div>
+
+              <div class="mt-3">
+                <button type="submit" class="btn btn-primary">
+                  Generate Pydantic Model
+                </button>
+                <button
+                  type="button"
+                  id="sampleJson"
+                  class="btn btn-secondary ms-2"
+                >
+                  Load Sample JSON
+                </button>
+              </div>
+
+              {% if error %}
+              <div class="error-message">{{ error }}</div>
+              {% endif %}
+            </div>
+            <div class="col-md-6">
+              <h4>Pydantic Model</h4>
+              <div class="code-container">
+                <textarea id="pydanticOutput" readonly>
+{{ pydantic_model }}</textarea
+                >
+              </div>
+              <button type="button" id="copyButton" class="btn btn-secondary">
+                Copy to Clipboard
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div class="footer">
+        <p>Built with FastAPI and Pydantic</p>
+      </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/javascript/javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/python/python.min.js"></script>
+    <script>
+      // Initialize CodeMirror for JSON input
+      const jsonEditor = CodeMirror.fromTextArea(
+        document.getElementById("jsonInput"),
+        {
+          mode: "application/json",
+          theme: "dracula",
+          lineNumbers: true,
+          matchBrackets: true,
+          autoCloseBrackets: true,
+          tabSize: 2,
+          lineWrapping: true,
+        }
+      );
+
+      // Initialize CodeMirror for Pydantic output
+      const pydanticEditor = CodeMirror.fromTextArea(
+        document.getElementById("pydanticOutput"),
+        {
+          mode: "python",
+          theme: "dracula",
+          lineNumbers: true,
+          readOnly: true,
+          lineWrapping: true,
+        }
+      );
+
+      // Form submission handler
+      document
+        .getElementById("jsonForm")
+        .addEventListener("submit", function (e) {
+          // Get value from CodeMirror
+          document.getElementById("jsonInput").value = jsonEditor.getValue();
+        });
+
+      // Copy to clipboard functionality
+      document
+        .getElementById("copyButton")
+        .addEventListener("click", function () {
+          const code = pydanticEditor.getValue();
+          if (code) {
+            navigator.clipboard
+              .writeText(code)
+              .then(() => {
+                const originalText = this.textContent;
+                this.textContent = "Copied!";
+                setTimeout(() => {
+                  this.textContent = originalText;
+                }, 2000);
+              })
+              .catch((err) => {
+                console.error("Could not copy text: ", err);
+              });
+          }
+        });
+
+      // Sample JSON functionality
+      document
+        .getElementById("sampleJson")
+        .addEventListener("click", function () {
+          const sampleJson = {
+            userId: 1234,
+            userName: "johndoe",
+            userEmail: "john@example.com",
+            isActive: true,
+            userProfile: {
+              fullName: "John Doe",
+              userBio: "Software developer",
+              ageInYears: 30,
+              userInterests: ["coding", "hiking", "reading"],
+            },
+            userPosts: [
+              {
+                postId: 1,
+                postTitle: "Hello World",
+                postContent: "This is my first post",
+                postTags: ["programming", "intro"],
+              },
+              {
+                postId: 2,
+                postTitle: "Pydantic is awesome",
+                postContent: "Here's why I love Pydantic",
+                postTags: ["python", "pydantic", "coding"],
+              },
+            ],
+            lastLoginTime: "2023-01-15T14:30:45Z",
+            createdDate: "2023-01-01",
+            metaData: null,
+          };
+          jsonEditor.setValue(JSON.stringify(sampleJson, null, 2));
+        });
+    </script>
+  </body>
+</html>

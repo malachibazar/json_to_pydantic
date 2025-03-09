@@ -1,0 +1,79 @@
+/* Additional styles for the JSON to Pydantic converter */
+
+/* Custom highlight for the focused editor */
+.CodeMirror-focused {
+    border: 1px solid #0d6efd;
+}
+
+/* Custom styling for the editor wrapper */
+.editor-wrapper {
+    position: relative;
+}
+
+/* Custom styling for any buttons we might add later */
+.action-button {
+    padding: 8px 15px;
+    margin-right: 10px;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+/* Dark mode option classes for future implementation */
+.dark-mode {
+    background-color: #212529;
+    color: #f8f9fa;
+}
+
+.dark-mode .converter-container {
+    background-color: #343a40;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.dark-mode .title-container h1 {
+    color: #f8f9fa;
+}
+
+.dark-mode .title-container p {
+    color: #adb5bd;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .code-container {
+        height: 300px;
+    }
+    
+    .col-md-6 {
+        margin-bottom: 20px;
+    }
+}
+
+/* Animation for the copy button */
+@keyframes flash {
+    0% { background-color: #28a745; }
+    100% { background-color: #6c757d; }
+}
+
+.flash-animation {
+    animation: flash 1s;
+}
+
+/* Custom scrollbar for the editors */
+.CodeMirror-vscrollbar::-webkit-scrollbar {
+    width: 8px;
+}
+
+.CodeMirror-vscrollbar::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.CodeMirror-vscrollbar::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+.CodeMirror-vscrollbar::-webkit-scrollbar-thumb:hover {
+    background: #555;
+} 
