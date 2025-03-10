@@ -3,7 +3,47 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>JSON to Pydantic Converter</title>
+    <title>JSON to Pydantic Converter | Convert JSON to Pydantic Models</title>
+    <meta
+      name="description"
+      content="Free online tool to convert JSON data into Python Pydantic models. Supports nested objects, date detection, camelCase conversion, and optional fields."
+    />
+    <meta
+      name="keywords"
+      content="JSON, Pydantic, Python, converter, FastAPI, data validation, model generation, camelCase, snake_case, JSON to Python"
+    />
+    <meta name="author" content="Malachi Bazar" />
+    <meta name="robots" content="index, follow" />
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://jsontopydantic.dev" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://jsontopydantic.dev" />
+    <meta property="og:title" content="JSON to Pydantic Converter" />
+    <meta
+      property="og:description"
+      content="Free tool to convert JSON data into Python Pydantic models with smart type detection."
+    />
+    <meta
+      property="og:image"
+      content="{{ url_for('static', path='og-image.png') }}"
+    />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://jsontopydantic.dev" />
+    <meta property="twitter:title" content="JSON to Pydantic Converter" />
+    <meta
+      property="twitter:description"
+      content="Free tool to convert JSON data into Python Pydantic models with smart type detection."
+    />
+    <meta
+      property="twitter:image"
+      content="{{ url_for('static', path='og-image.png') }}"
+    />
+
     <link
       rel="icon"
       href="{{ url_for('static', path='favicon.ico') }}"
@@ -121,108 +161,142 @@
         text-decoration: underline;
       }
     </style>
+
+    <!-- Structured Data (JSON-LD) for better SEO -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "JSON to Pydantic Converter",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "Web",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        },
+        "description": "A free tool that converts JSON data into Python Pydantic models. Features include support for nested structures, automatic date and datetime detection, camelCase to snake_case conversion, and optional fields.",
+        "author": {
+          "@type": "Person",
+          "name": "Malachi Bazar"
+        }
+      }
+    </script>
   </head>
   <body>
     <div class="container">
-      <div class="title-container">
-        <h1>JSON to Pydantic Converter</h1>
-        <p>
-          Paste your JSON on the left and get a generated Pydantic model on the
-          right
-        </p>
-      </div>
+      <header>
+        <div class="title-container">
+          <h1>JSON to Pydantic Converter</h1>
+          <p>
+            Paste your JSON on the left and get a generated Pydantic model on
+            the right
+          </p>
+        </div>
+      </header>
 
-      <div class="converter-container">
-        <form method="post" id="jsonForm">
-          <div class="row">
-            <div class="col-md-6">
-              <h4>JSON Input</h4>
-              <div class="code-container">
-                <textarea id="jsonInput" name="json_input">
+      <main>
+        <div class="converter-container">
+          <form method="post" id="jsonForm">
+            <div class="row">
+              <div class="col-md-6">
+                <h2 class="h4">JSON Input</h2>
+                <div class="code-container">
+                  <textarea
+                    id="jsonInput"
+                    name="json_input"
+                    aria-label="JSON Input"
+                  >
 {{ json_input }}</textarea
-                >
-              </div>
-
-              <div class="option-group">
-                <div class="options-title">Generation Options:</div>
-                <div class="form-check">
-                  <input
-                    class="form-check-input"
-                    type="checkbox"
-                    id="makeOptional"
-                    name="make_optional"
-                    {%
-                    if
-                    make_optional
-                    %}checked{%
-                    endif
-                    %}
-                  />
-                  <label class="form-check-label" for="makeOptional">
-                    Make all fields optional
-                  </label>
+                  >
                 </div>
-                <div class="form-check">
-                  <input
-                    class="form-check-input"
-                    type="checkbox"
-                    id="convertCamelCase"
-                    name="convert_camel_case"
-                    {%
-                    if
-                    convert_camel_case
-                    %}checked{%
-                    endif
-                    %}
-                  />
-                  <label class="form-check-label" for="convertCamelCase">
-                    Convert camelCase to snake_case with aliases
-                  </label>
+
+                <div class="option-group">
+                  <div class="options-title">Generation Options:</div>
+                  <div class="form-check">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      id="makeOptional"
+                      name="make_optional"
+                      {%
+                      if
+                      make_optional
+                      %}checked{%
+                      endif
+                      %}
+                    />
+                    <label class="form-check-label" for="makeOptional">
+                      Make all fields optional
+                    </label>
+                  </div>
+                  <div class="form-check">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      id="convertCamelCase"
+                      name="convert_camel_case"
+                      {%
+                      if
+                      convert_camel_case
+                      %}checked{%
+                      endif
+                      %}
+                    />
+                    <label class="form-check-label" for="convertCamelCase">
+                      Convert camelCase to snake_case with aliases
+                    </label>
+                  </div>
                 </div>
-              </div>
 
-              <div class="mt-3">
-                <button type="submit" class="btn btn-primary">
-                  Generate Pydantic Model
-                </button>
-                <button
-                  type="button"
-                  id="sampleJson"
-                  class="btn btn-secondary ms-2"
-                >
-                  Load Sample JSON
-                </button>
-              </div>
+                <div class="mt-3">
+                  <button type="submit" class="btn btn-primary">
+                    Generate Pydantic Model
+                  </button>
+                  <button
+                    type="button"
+                    id="sampleJson"
+                    class="btn btn-secondary ms-2"
+                  >
+                    Load Sample JSON
+                  </button>
+                </div>
 
-              {% if error %}
-              <div class="error-message">{{ error }}</div>
-              {% endif %}
-            </div>
-            <div class="col-md-6">
-              <h4>Pydantic Model</h4>
-              <div class="code-container">
-                <textarea id="pydanticOutput" readonly>
+                {% if error %}
+                <div class="error-message">{{ error }}</div>
+                {% endif %}
+              </div>
+              <div class="col-md-6">
+                <h2 class="h4">Pydantic Model</h2>
+                <div class="code-container">
+                  <textarea
+                    id="pydanticOutput"
+                    readonly
+                    aria-label="Generated Pydantic Model"
+                  >
 {{ pydantic_model }}</textarea
-                >
+                  >
+                </div>
+                <button type="button" id="copyButton" class="btn btn-secondary">
+                  Copy to Clipboard
+                </button>
               </div>
-              <button type="button" id="copyButton" class="btn btn-secondary">
-                Copy to Clipboard
-              </button>
             </div>
-          </div>
-        </form>
-      </div>
+          </form>
+        </div>
+      </main>
 
-      <div class="footer">
+      <footer class="footer">
         <p>Built with FastAPI and Pydantic by Malachi Bazar</p>
         <p>
           <a
             href="https://github.com/malachibazar/json_to_pydantic"
             target="_blank"
+            rel="noopener"
             >View on GitHub</a
           >
         </p>
-      </div>
+      </footer>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>

@@ -1,13 +1,17 @@
 from fastapi import FastAPI, Request, Form, HTTPException
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, FileResponse, PlainTextResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 import json
+import os
 from typing import Any, Optional, Tuple
 import re
 from datetime import datetime
 
-app = FastAPI(title="JSON to Pydantic Converter")
+app = FastAPI(
+    title="JSON to Pydantic Converter",
+    description="Convert JSON data to Pydantic models",
+)
 
 # Set up templates
 templates = Jinja2Templates(directory="templates")
@@ -18,6 +22,42 @@ try:
 except RuntimeError:
     # Static directory might not exist yet
     pass
+
+
+# SEO-friendly routes
+@app.get("/robots.txt", response_class=PlainTextResponse)
+async def get_robots_txt():
+    """Serve robots.txt file for search engines"""
+    robots_path = os.path.join("static", "robots.txt")
+    if os.path.exists(robots_path):
+        with open(robots_path, "r") as f:
+            return f.read()
+    return "User-agent: *\nAllow: /\n"
+
+
+@app.get("/sitemap.xml", response_class=PlainTextResponse)
+async def get_sitemap():
+    """Serve sitemap.xml file for search engines"""
+    sitemap_path = os.path.join("static", "sitemap.xml")
+    if os.path.exists(sitemap_path):
+        with open(sitemap_path, "r") as f:
+            content = f.read()
+        return PlainTextResponse(content=content, media_type="application/xml")
+
+    # Generate simple sitemap if file doesn't exist
+    return PlainTextResponse(
+        content=(
+            '<?xml version="1.0" encoding="UTF-8"?>\n'
+            '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+            "  <url>\n"
+            "    <loc>https://json-to-pydantic.malachibazar.com/</loc>\n"
+            "    <changefreq>monthly</changefreq>\n"
+            "    <priority>1.0</priority>\n"
+            "  </url>\n"
+            "</urlset>"
+        ),
+        media_type="application/xml",
+    )
 
 
 def detect_date_time(value: str) -> Tuple[bool, str]:
