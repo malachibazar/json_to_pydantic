@@ -28,7 +28,7 @@ A web application that converts JSON data into Pydantic model definitions.
 
 ## Requirements
 
-- Python 3.13+
+- Python 3.11+
 - FastAPI
 - uv (modern Python package manager)
 
@@ -37,15 +37,15 @@ A web application that converts JSON data into Pydantic model definitions.
 1. Clone this repository:
 
 ```bash
-git clone <repository-url>
-cd json-to-pydantic
+git clone https://github.com/malachibazar/json_to_pydantic.git
+cd json_to_pydantic
 ```
 
 1. Install dependencies with uv:
 
 ```bash
 # Create a virtual environment and install dependencies in one step
-uv pip install -e .
+uv sync
 ```
 
 ## Running the Application
