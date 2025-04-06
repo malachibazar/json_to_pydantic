@@ -64,47 +64,56 @@ def detect_date_time(value: str) -> Tuple[bool, str]:
     """
     Detect if a string is a date or datetime.
     Returns (is_date_or_time, type_string)
+
+    Supports a limited set of strict formats:
+    - Dates: YYYY-MM-DD, YYYY/MM/DD
+    - Datetimes: ISO 8601 with T separator and optional timezone
     """
-    # Common date formats
+    # Only allow specific date formats
     date_patterns = [
         # ISO 8601
         r"^\d{4}-\d{2}-\d{2}$",  # YYYY-MM-DD
         r"^\d{4}/\d{2}/\d{2}$",  # YYYY/MM/DD
-        r"^\d{2}-\d{2}-\d{4}$",  # MM-DD-YYYY
-        r"^\d{2}/\d{2}/\d{4}$",  # MM/DD/YYYY
     ]
 
-    # Common datetime formats
+    # Only allow specific datetime formats - more strict than before
     datetime_patterns = [
-        # ISO 8601
+        # ISO 8601 with T separator
         r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:?\d{2})?$",  # ISO with T
-        r"^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:?\d{2})?$",  # ISO with space
-        r"^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$",  # YYYY-MM-DD HH:MM:SS
-        r"^\d{4}/\d{2}/\d{2} \d{2}:\d{2}:\d{2}$",  # YYYY/MM/DD HH:MM:SS
-        # RFC formats often used in APIs
-        r"^\w{3}, \d{2} \w{3} \d{4} \d{2}:\d{2}:\d{2} GMT$",  # RFC 7231
+        # RFC3339 (subset of ISO 8601)
+        r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z$",  # UTC with Z
+        r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?[+-]\d{2}:\d{2}$",  # With timezone offset
     ]
 
-    # Try to parse with datetime to validate
+    # Try to parse with actual datetime parsing to validate
     try:
         # Check for date patterns
         for pattern in date_patterns:
             if re.match(pattern, value):
-                return True, "date"
+                # Validate by trying to parse
+                try:
+                    if "-" in value:
+                        datetime.strptime(value, "%Y-%m-%d")
+                    elif "/" in value:
+                        datetime.strptime(value, "%Y/%m/%d")
+                    else:
+                        continue
+                    return True, "date"
+                except ValueError:
+                    # If parsing fails, it's not a valid date
+                    continue
 
         # Check for datetime patterns
         for pattern in datetime_patterns:
             if re.match(pattern, value):
-                return True, "datetime"
-
-        # If it has a timezone indicator, it's likely a datetime
-        if (
-            "Z" in value
-            or "+" in value
-            or "-" in value
-            and (":" in value or "T" in value)
-        ):
-            return True, "datetime"
+                # Try to parse with ISO format
+                try:
+                    # For ISO format with T
+                    datetime.fromisoformat(value.replace("Z", "+00:00"))
+                    return True, "datetime"
+                except ValueError:
+                    # If parsing fails, it's not a valid datetime
+                    continue
 
     except (ValueError, TypeError):
         pass
