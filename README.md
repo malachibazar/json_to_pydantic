@@ -10,6 +10,10 @@ A web application that converts JSON data into Pydantic model definitions.
   - Copy-to-clipboard functionality
   - Sample JSON data for quick testing
 
+- **Privacy Focused**
+  - **100% Client-Side Processing**: Your data never leaves your browser.
+  - No server-side storage or logging of your JSON input.
+
 - **Smart Type Detection**
   - Automatic detection of standard Python types (str, int, bool, etc.)
   - **Date and datetime detection** with appropriate imports
@@ -90,7 +94,7 @@ Or use the provided script:
 
 ## How It Works
 
-The application uses Python's type system and a recursive algorithm to analyze JSON structures and generate appropriate Pydantic model classes:
+The application uses a powerful JavaScript engine to analyze JSON structures and generate appropriate Pydantic model classes directly in your browser:
 
 1. Parses the JSON input and validates its structure
 2. Identifies field types through intelligent type detection, including dates
