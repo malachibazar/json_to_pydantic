@@ -13,6 +13,9 @@ app = FastAPI(
     description="Convert JSON data to Pydantic models",
 )
 
+# Configuration
+GOOGLE_ANALYTICS_ID = os.getenv("GOOGLE_ANALYTICS_ID")
+
 # Set up templates
 templates = Jinja2Templates(directory="templates")
 
@@ -361,6 +364,7 @@ async def index(request: Request):
             "json_input": "",
             "make_optional": False,
             "convert_camel_case": False,
+            "google_analytics_id": GOOGLE_ANALYTICS_ID,
         },
     )
 
@@ -383,6 +387,7 @@ async def convert_json(
                     "make_optional": make_optional,
                     "convert_camel_case": convert_camel_case,
                     "error": "Please enter some JSON",
+                    "google_analytics_id": GOOGLE_ANALYTICS_ID,
                 },
             )
 
@@ -404,6 +409,7 @@ async def convert_json(
                 "json_input": json_input,
                 "make_optional": make_optional,
                 "convert_camel_case": convert_camel_case,
+                "google_analytics_id": GOOGLE_ANALYTICS_ID,
             },
         )
     except json.JSONDecodeError:
@@ -416,6 +422,7 @@ async def convert_json(
                 "make_optional": make_optional,
                 "convert_camel_case": convert_camel_case,
                 "error": "Invalid JSON format",
+                "google_analytics_id": GOOGLE_ANALYTICS_ID,
             },
         )
     except Exception as e:
@@ -428,6 +435,7 @@ async def convert_json(
                 "make_optional": make_optional,
                 "convert_camel_case": convert_camel_case,
                 "error": str(e),
+                "google_analytics_id": GOOGLE_ANALYTICS_ID,
             },
         )
 
