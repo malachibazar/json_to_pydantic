@@ -78,106 +78,7 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/dracula.min.css"
     />
-    <style>
-      body {
-        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
-          Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue",
-          sans-serif;
-        padding: 20px;
-        background-color: #f8f9fa;
-      }
-      .title-container {
-        text-align: center;
-        margin-bottom: 30px;
-      }
-      .title-container h1 {
-        font-weight: 700;
-        color: #343a40;
-      }
-      .title-container p {
-        color: #6c757d;
-        max-width: 600px;
-        margin: 0 auto;
-      }
-      .converter-container {
-        background-color: white;
-        border-radius: 10px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-        padding: 20px;
-        margin-bottom: 20px;
-      }
-      .code-container {
-        border-radius: 6px;
-        overflow: hidden;
-        margin-bottom: 20px;
-        height: 500px;
-      }
-      .CodeMirror {
-        height: 100%;
-        font-size: 12px;
-        line-height: 1.4;
-      }
-      .CodeMirror pre {
-        padding: 0 4px;
-      }
-      button {
-        padding: 10px 20px;
-        background-color: #0d6efd;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        font-weight: 500;
-        transition: background-color 0.2s;
-      }
-      button:hover {
-        background-color: #0b5ed7;
-      }
-      .error-message {
-        color: #dc3545;
-        margin-top: 10px;
-        font-weight: 500;
-      }
-      .copy-button {
-        margin-top: 10px;
-        background-color: #6c757d;
-      }
-      .copy-button:hover {
-        background-color: #5a6268;
-      }
-      .footer {
-        text-align: center;
-        margin-top: 40px;
-        color: #6c757d;
-        font-size: 14px;
-      }
-      .option-group {
-        margin-top: 15px;
-        padding-top: 15px;
-        border-top: 1px solid #e9ecef;
-      }
-      .form-check {
-        margin-right: 15px;
-        display: inline-block;
-      }
-      .form-check-label {
-        font-size: 0.9rem;
-        color: #495057;
-      }
-      .options-title {
-        font-size: 0.95rem;
-        font-weight: 600;
-        margin-bottom: 10px;
-        color: #495057;
-      }
-      .footer a {
-        color: #0d6efd;
-        text-decoration: none;
-      }
-      .footer a:hover {
-        text-decoration: underline;
-      }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', path='style.css') }}">
 
     <!-- Structured Data (JSON-LD) for better SEO -->
     <script type="application/ld+json">
@@ -214,7 +115,7 @@
 
       <main>
         <div class="converter-container">
-          <form method="post" id="jsonForm">
+          <div id="jsonForm">
             <div class="row">
               <div class="col-md-6">
                 <h2 class="h4">JSON Input</h2>
@@ -223,12 +124,23 @@
                     id="jsonInput"
                     name="json_input"
                     aria-label="JSON Input"
-                  >
-{{ json_input }}</textarea
-                  >
+                  ></textarea>
                 </div>
 
-                <div class="option-group">
+                <div class="button-group">
+                  <button type="button" id="generateButton" class="btn btn-primary">
+                    Generate Pydantic Model
+                  </button>
+                  <button
+                    type="button"
+                    id="sampleJson"
+                    class="btn btn-secondary"
+                  >
+                    Load Sample JSON
+                  </button>
+                </div>
+
+                <div class="controls-area">
                   <div class="options-title">Generation Options:</div>
                   <div class="form-check">
                     <input
@@ -236,12 +148,6 @@
                       type="checkbox"
                       id="makeOptional"
                       name="make_optional"
-                      {%
-                      if
-                      make_optional
-                      %}checked{%
-                      endif
-                      %}
                     />
                     <label class="form-check-label" for="makeOptional">
                       Make all fields optional
@@ -253,12 +159,6 @@
                       type="checkbox"
                       id="convertCamelCase"
                       name="convert_camel_case"
-                      {%
-                      if
-                      convert_camel_case
-                      %}checked{%
-                      endif
-                      %}
                     />
                     <label class="form-check-label" for="convertCamelCase">
                       Convert camelCase to snake_case with aliases
@@ -266,22 +166,7 @@
                   </div>
                 </div>
 
-                <div class="mt-3">
-                  <button type="submit" class="btn btn-primary">
-                    Generate Pydantic Model
-                  </button>
-                  <button
-                    type="button"
-                    id="sampleJson"
-                    class="btn btn-secondary ms-2"
-                  >
-                    Load Sample JSON
-                  </button>
-                </div>
-
-                {% if error %}
-                <div class="error-message">{{ error }}</div>
-                {% endif %}
+                <div id="errorMessage" class="error-message" style="display: none;"></div>
               </div>
               <div class="col-md-6">
                 <h2 class="h4">Pydantic Model</h2>
@@ -290,21 +175,25 @@
                     id="pydanticOutput"
                     readonly
                     aria-label="Generated Pydantic Model"
-                  >
-{{ pydantic_model }}</textarea
-                  >
+                  ></textarea>
                 </div>
                 <button type="button" id="copyButton" class="btn btn-secondary">
                   Copy to Clipboard
                 </button>
               </div>
             </div>
-          </form>
+          </div>
         </div>
       </main>
 
       <footer class="footer">
         <p>Built with FastAPI and Pydantic by Malachi Bazar</p>
+        <div class="client-side-badge footer-badge">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" />
+          </svg>
+          100% Client-Side Processing
+        </div>
         <p>
           <a
             href="https://github.com/malachibazar/json_to_pydantic"
@@ -319,6 +208,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/javascript/javascript.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/python/python.min.js"></script>
+    <script src="{{ url_for('static', path='js/converter.js') }}"></script>
     <script>
       // Initialize CodeMirror for JSON input
       const jsonEditor = CodeMirror.fromTextArea(
@@ -346,12 +236,44 @@
         }
       );
 
-      // Form submission handler
+      // Generate button handler
       document
-        .getElementById("jsonForm")
-        .addEventListener("submit", function (e) {
-          // Get value from CodeMirror
-          document.getElementById("jsonInput").value = jsonEditor.getValue();
+        .getElementById("generateButton")
+        .addEventListener("click", function () {
+          const jsonStr = jsonEditor.getValue();
+          const makeOptional = document.getElementById("makeOptional").checked;
+          const convertCamelCase = document.getElementById("convertCamelCase").checked;
+          const errorDiv = document.getElementById("errorMessage");
+          
+          errorDiv.style.display = "none";
+          errorDiv.textContent = "";
+
+          if (!jsonStr.trim()) {
+            errorDiv.textContent = "Please enter some JSON";
+            errorDiv.style.display = "block";
+            return;
+          }
+
+          try {
+            const jsonData = JSON.parse(jsonStr);
+            if (typeof jsonData !== 'object' || jsonData === null) {
+               throw new Error("Input JSON must be an object/dictionary");
+            }
+            
+            const pydanticModel = generatePydanticModel(
+                jsonData, 
+                "MyModel", 
+                null, 
+                makeOptional, 
+                convertCamelCase
+            );
+            
+            pydanticEditor.setValue(pydanticModel);
+          } catch (e) {
+            errorDiv.textContent = "Invalid JSON format: " + e.message;
+            errorDiv.style.display = "block";
+            pydanticEditor.setValue("");
+          }
         });
 
       // Copy to clipboard functionality
