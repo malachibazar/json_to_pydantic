@@ -1,0 +1,19 @@
+# JSON to Pydantic Converter
+
+## Description
+This tool converts JSON data into Python Pydantic models. It is designed to help developers quickly generate data models from API responses or other JSON sources.
+
+## Features
+- **Smart Type Detection**: Automatically detects types including dates and datetimes.
+- **Nested Structures**: Handles deeply nested JSON objects and arrays.
+- **CamelCase to Snake_Case**: Optional conversion of field names to Pythonic snake_case with Pydantic aliases.
+- **Optional Fields**: Option to make all fields optional.
+- **Client-Side Processing**: All conversion happens in the browser; no data is sent to the server.
+
+## Usage
+1. Paste JSON into the left panel.
+2. Click "Generate Pydantic Model".
+3. Copy the generated Python code from the right panel.
+
+## URL
+https://jsontopydantic.dev

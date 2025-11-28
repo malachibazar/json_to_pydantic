@@ -53,7 +53,7 @@ async def get_sitemap():
             '<?xml version="1.0" encoding="UTF-8"?>\n'
             '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
             "  <url>\n"
-            "    <loc>https://json-to-pydantic.malachibazar.com/</loc>\n"
+            "    <loc>https://jsontopydantic.dev/</loc>\n"
             "    <changefreq>monthly</changefreq>\n"
             "    <priority>1.0</priority>\n"
             "  </url>\n"
@@ -61,6 +61,16 @@ async def get_sitemap():
         ),
         media_type="application/xml",
     )
+
+
+@app.get("/llms.txt", response_class=PlainTextResponse)
+async def get_llms_txt():
+    """Serve llms.txt file for AI agents"""
+    llms_path = os.path.join("static", "llms.txt")
+    if os.path.exists(llms_path):
+        with open(llms_path, "r") as f:
+            return f.read()
+    return "JSON to Pydantic Converter\nhttps://jsontopydantic.dev"
 
 
 @app.get("/", response_class=HTMLResponse)
