@@ -4,6 +4,9 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 import os
 from datetime import datetime
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = FastAPI(
     title="JSON to Pydantic Converter",

@@ -9,3 +9,4 @@ wheels/
 # Virtual environments
 .venv
 gunicorn_conf.py
+.env
